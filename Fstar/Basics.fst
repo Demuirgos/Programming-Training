@@ -25,3 +25,15 @@ let _ = assert (forall (x:int{x < 0}). x < 0)
 let _ = assert (forall (n:nat) (m:nat).
                     (m + n = 0 ==> m = 0 /\ n = 0) /\ 
                     (m * n = 0 ==> m = 0 \/ n = 0))
+
+//===========================================================================================================
+
+val fac : x:nat -> z:nat{ z >= 0 }
+let rec fac n = match n with 
+    | 0 -> 0
+    | n -> n * fac (n-1)
+
+val fibb : i:nat -> r:nat
+let rec fibb n = match n with 
+    | 0 | 1 -> n
+    | _ -> fibb (n-1) + fibb (n-2)
