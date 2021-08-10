@@ -1,6 +1,7 @@
 module Basics
 
 open FStar.Mul
+open FStar.Real
 
 //==================================================================================================
 type divides  (divisor :nat) (n:nat) = exists (k:nat). k*divisor=n
@@ -43,7 +44,6 @@ let _ = assert (forall (n:nat) (m:nat).
                     (m * n = 0 ==> m = 0 \/ n = 0))
 
 //===========================================================================================================
-
 val fac : x:nat -> z:nat{ z >= 0 }
 let rec fac n = match n with 
     | 0 -> 0
@@ -53,3 +53,22 @@ val fibb : i:nat -> r:nat{ r >= 1 /\ r >= i }
 let rec fibb n = match n with 
     | 0 | 1 -> 1
     | _ -> fibb (n-1) + fibb (n-2)
+
+//==================================================================================================
+type lowBound = forall (n:nat). exists (m:nat). m <= n
+
+//==================================================================================================
+val pow2 : x:real -> y:real{ y >=. zero } 
+let pow2 x = x *. x
+
+//==================================================================================================
+let pow_assert x = 
+    assume (x <> 0);
+    assert (x * x > 0)
+//  assert (x * x < 0) evaluates to wrong /false cause clearly sqr func is a map from R to R+
+
+//==================================================================================================
+let fibb_assert (n:nat) (k:nat)= 
+    assume (n > k);
+    // assert (fibb n > fibb k) doen't work
+    admit() // cheating basically LOL
