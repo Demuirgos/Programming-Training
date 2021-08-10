@@ -33,7 +33,7 @@ let rec fac n = match n with
     | 0 -> 0
     | n -> n * fac (n-1)
 
-val fibb : i:nat -> r:nat
+val fibb : i:nat -> r:nat{ r >= 1 /\ r >= i }
 let rec fibb n = match n with 
-    | 0 | 1 -> n
+    | 0 | 1 -> 1
     | _ -> fibb (n-1) + fibb (n-2)
