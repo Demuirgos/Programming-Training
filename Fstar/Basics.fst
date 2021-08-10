@@ -2,6 +2,21 @@ module Basics
 
 open FStar.Mul
 
+//==================================================================================================
+type divides  (divisor :nat) (n:nat) = exists (k:nat). k*divisor=n
+type isPrime n = ~(exists (d:nat). divides d n /\ 1<d /\ d<n)
+
+let _ = assert(isPrime 23)
+let _ = assert(isPrime 3)
+// let _ = assert(isPrime 4) does not pass the Z3 SMT Solver's query
+
+//==================================================================================================
+type favorite (n:nat) = n = 23
+
+let _ = assert(favorite 23)
+//let _ = assert(favorite 22) doesn't pass cause cleary 22 sucks as a number
+
+//==================================================================================================
 val max : x:int -> y:int -> z:int{ z >= x && z >= y }
 val min : x:nat -> y:nat -> z:nat{ z = x  || z = y  }
 
@@ -18,6 +33,7 @@ let _ = assert (forall x y. min x y <= x /\
                             min x y <= y /\
                             (min x y = x \/ min x y = y))
 
+//==================================================================================================
 let _ = assert (forall (x:nat). 0 <= x)
 
 let _ = assert (forall (x:int{x < 0}). x < 0)
