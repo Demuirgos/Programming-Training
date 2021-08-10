@@ -72,3 +72,5 @@ let fibb_assert (n:nat) (k:nat)=
     assume (n > k);
     // assert (fibb n > fibb k) doen't work
     admit() // cheating basically LOL
+
+// next : type classes and more type theory 
