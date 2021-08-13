@@ -5,11 +5,12 @@ open FStar.Real
 
 //==================================================================================================
 type divides  (divisor :nat) (n:nat) = exists (k:nat). k*divisor=n
-type isPrime n = ~(exists (d:nat). divides d n /\ 1<d /\ d<n)
+type isPrime n = ~(exists (d:nat). divides d n /\ 1<d /\ d<n) /\ n>1
 
 let _ = assert(isPrime 23)
 let _ = assert(isPrime 3)
-// let _ = assert(isPrime 4) does not pass the Z3 SMT Solver's query
+//let _ = assert(isPrime 1) //does not pass the Z3 SMT Solver's query
+//let _ = assert(isPrime 4) //does not pass the Z3 SMT Solver's query
 
 //==================================================================================================
 type favorite (n:nat) = n = 23
@@ -44,7 +45,7 @@ let _ = assert (forall (n:nat) (m:nat).
                     (m * n = 0 ==> m = 0 \/ n = 0))
 
 //===========================================================================================================
-val fac : x:nat -> z:nat{ z >= 0 }
+val fac : x:nat -> z:nat
 let rec fac n = match n with 
     | 0 -> 0
     | n -> n * fac (n-1)
@@ -55,7 +56,8 @@ let rec fibb n = match n with
     | _ -> fibb (n-1) + fibb (n-2)
 
 //==================================================================================================
-type lowBound = forall (n:nat). exists (m:nat). m <= n
+//type lowBound = forall (n:nat). exists (m:nat). m <= n
+type lowBound  = exists (m:nat). forall (n:nat). m <= n
 
 //==================================================================================================
 val pow2 : x:real -> y:real{ y >=. zero } 
@@ -68,9 +70,3 @@ let pow_assert x =
 //  assert (x * x < 0) evaluates to wrong /false cause clearly sqr func is a map from R to R+
 
 //==================================================================================================
-let fibb_assert (n:nat) (k:nat)= 
-    assume (n > k);
-    // assert (fibb n > fibb k) doen't work
-    admit() // cheating basically LOL
-
-// next : type classes and more type theory 
