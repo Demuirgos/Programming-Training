@@ -1,6 +1,10 @@
 module Lemmas
 open FStar.Mul
 
+type option 'a = 
+    | None 
+    | Some : v:'a -> option 'a
+
 let rec factorial (n:nat) 
     : nat
     = if n = 0 
@@ -31,9 +35,18 @@ let rec reverse (#a:Type) (l:list a)
     | []   -> []
     | h::t -> append (reverse t) [h]
 
-let cons (#a:Type) (l:list a) (h:a) = h::l
-let snoc (#a:Type) (l:list a) (h:a) = append l [h]
- 
+let cons (l:list 'a) (h:'a) = h::l
+let snoc (l:list 'a) (h:'a) = append l [h]
+
+let rec map f l = match l with 
+    | [] -> []
+    | h::t -> f h:: map f t
+
+let rec foldl (f:('b -> 'a -> Tot 'a)) (a:'a) (b:list 'b) 
+    : Tot 'a (decreases b)
+    = match b with 
+    | [] -> a
+    | h::t -> foldl f (f h a) t
 //====================================================================
 
 // let's prove that (fact n) > 0 for all n:nat
@@ -147,3 +160,30 @@ let rec reverse_is_injective #a (l1 l2:list a)
         snoc_is_injective (reverse t1) (reverse t2) h1 h2;
         reverse_is_injective t1 t2
       | _ -> ()
+
+//====================================================================
+
+// let's prove that find f l = Some v ==> f v = true
+val find : f:('a -> Tot bool) -> (l:list 'a) -> Tot (option (x:'a{f x}))
+let rec find f l = match l with 
+    | [] -> None
+    | h::t -> if f h then Some h else find f t
+
+//====================================================================
+
+// let's prove that fold_left Cons [] == reverse
+let rec append_is_associative #a (l1 l2 l3:list a) 
+    : Lemma (append l1 (append l2 l3) == append (append l1 l2) l3)
+    = match l1 with 
+    | [] -> ()
+    | _::t1 -> append_is_associative t1 l2 l3
+
+let rec foldl_cons_is_reverse #a (l1 l2:list a) 
+    : Lemma (foldl Cons l2 l1 == append (reverse l1) l2)
+    = match l1 with 
+    | [] -> ()
+    | h1::t1 -> 
+        append_is_associative (reverse t1) [h1] l2;
+        foldl_cons_is_reverse t1 (h1::l2)
+
+ 
