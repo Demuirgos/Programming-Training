@@ -39,6 +39,15 @@ let rec partition #t f = function
   | hd::tl  ->  let l1, l2 = partition f tl in
                 if f hd then hd::l1, l2 else l1, hd::l2
 
+let rec count_occurrance (#t:eqtype) (i:t) (l:list t) 
+    : Tot nat
+    = match l with 
+    | []    -> 0
+    | h::tl -> if h <> i then (count_occurrance i tl)
+               else 1 + ( count_occurrance i tl )
+
+let is_in (#t:eqtype) (i:t) (l:list t) : Tot bool = count_occurrance i l > 0 
+
 //================================================================================================================\\ 
 val append_membership_union : #t:eqtype -> l1:list t -> l2:list t
                             -> Lemma (forall x. is_member_of x (append l1 l2) 
@@ -53,7 +62,10 @@ val partition_membership_lemma : #t:eqtype -> f:(t-> Tot bool) -> l:(list t)
                         length t + length b = length l    
                         /\ (forall x. is_member_of x t ==> f x)                  
                         /\ (forall x. is_member_of x b ==> not (f x))                  
-                        /\ (forall x. is_member_of x l = (is_member_of x t || is_member_of x b))))
+                        /\ (forall x. is_member_of x l 
+                                    = (is_member_of x t || is_member_of x b))
+                        /\ (forall i. count_occurrance i l 
+                                    = (count_occurrance i t) + (count_occurrance i b))))
        [SMTPat (partition f l)]
 let rec partition_membership_lemma #t f l = match l with 
     | [] -> ()
@@ -79,5 +91,6 @@ let rec sort #t f l = match l with
   | [] -> []
   | pivot::tl ->
     let hi, lo = partition (f pivot) tl in
-    assert (forall i. is_member_of i (pivot :: sort f hi) = is_member_of i (append [pivot] (sort f hi)));
+    assert (forall i. is_member_of i (pivot :: sort f hi) 
+                    = is_member_of i (append [pivot] (sort f hi)));
     append (sort f lo) (pivot::sort f hi)
