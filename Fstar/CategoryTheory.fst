@@ -2,26 +2,39 @@ module CategoryTheory
 //Note 2 Self : Needs finishing 
 (*
     A Category is a Graph-like Concept, with Nodes 
-    representing Objects and Edges representing 
+    representing objs and Edges representing 
     Morphisms (aka arrows), it obbeys a set of axioms :
     - the composability : f:(A->B) o g:(B->C) = h:(A->C)  
-    - the identity      : f:(A->B) => Neutral<A> o f = f o Neutral<B>
+    - the identity      : f:(A->B) => Id<A> o f = f o Id<B>
 *)
 
-noeq type axioms (#object:Type) (arr : object -> object -> Type) 
-                 (id:(o:object) -> arr o o) 
-                 (compose:((#a:object) -> (#b:object) -> (#c:object) -> (arr a b) -> (arr b c) -> (arr a c))) = {
-    neutrality    : #a:object -> #b:object 
+noeq type axioms (#obj:Type) (arr : obj -> obj -> Type) 
+                 (id:(o:obj) -> arr o o) 
+                 (compose:((#a:obj) -> (#b:obj) -> (#c:obj) -> (arr a b) -> (arr b c) -> (arr a c))) = {
+    neutrality    : #a:obj -> #b:obj 
                     -> f:arr a b -> Lemma ((compose (id a) f == f) /\ (compose f (id b) == f));
-    associativity : #a:object -> #b:object -> #c:object -> #d:object
+    associativity : #a:obj -> #b:obj -> #c:obj -> #d:obj
                     -> f:(arr a b) -> g:(arr b c) -> h:(arr c d) 
                     -> Lemma (compose f (compose g h) == compose (compose f g) h);
 }
 
-noeq type category (object:Type) (morphism: object -> object -> Type) : Type = 
-    | Cat :  id     :(o:object -> morphism o o)
-          -> compose: (#a:object -> #b:object -> #c:object 
+noeq type category (obj:Type) (morphism: (obj -> obj -> Type)) : Type = 
+    | Cat :  id     :(o:obj -> morphism o o)
+          -> compose: (#a:obj -> #b:obj -> #c:obj 
                     -> (f:morphism a b) -> (g:morphism b c) -> (morphism a c))
           -> proofs : axioms morphism id compose
-          -> category object morphism
+          -> category obj morphism
     
+type le : nat -> nat -> Type =
+    | LERflx : #n:nat -> le n n
+    | LENext : #n:nat -> #m:nat -> le n m -> le n (m + 1)
+let (<=) = le
+let natPoset_le : category nat (<=) = admit()
+
+type ge : nat -> nat -> Type =
+    | GERflx : #n:nat -> ge n n
+    | GENext : #n:nat -> #m:nat -> ge n m -> ge (n + 1) m
+let (>=) = ge
+let natPoset_ge : category nat (>=) = admit()
+
+let (=>) (f:'a->'b) (g:'b->'c) (x:'a) = g (f x)
