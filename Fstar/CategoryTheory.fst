@@ -1,5 +1,4 @@
 module CategoryTheory
-//Note 2 Self : Needs finishing 
 (*
     A Category is a Graph-like Concept, with Nodes 
     representing objs and Edges representing 
@@ -7,15 +6,14 @@ module CategoryTheory
     - the composability : f:(A->B) o g:(B->C) = h:(A->C)  
     - the identity      : f:(A->B) => Id<A> o f = f o Id<B>
 *)
-
 noeq type axioms (#obj:Type) (arr : obj -> obj -> Type) 
                  (id:(o:obj) -> arr o o) 
                  (compose:((#a:obj) -> (#b:obj) -> (#c:obj) -> (arr a b) -> (arr b c) -> (arr a c))) = {
     neutrality    : #a:obj -> #b:obj 
-                    -> f:arr a b -> Lemma ((compose (id a) f == f) /\ (compose f (id b) == f));
+                    -> f:arr a b -> Lemma (((id a) `compose` f == f) /\ (f `compose` (id b) == f));
     associativity : #a:obj -> #b:obj -> #c:obj -> #d:obj
                     -> f:(arr a b) -> g:(arr b c) -> h:(arr c d) 
-                    -> Lemma (compose f (compose g h) == compose (compose f g) h);
+                    -> Lemma (f `compose` (g `compose` h) == (f `compose` g) `compose` h);
 }
 
 noeq type category (obj:Type) (morphism: (obj -> obj -> Type)) : Type = 
@@ -36,5 +34,3 @@ type ge : nat -> nat -> Type =
     | GENext : #n:nat -> #m:nat -> ge n m -> ge (n + 1) m
 let (>=) = ge
 let natPoset_ge : category nat (>=) = admit()
-
-let (=>) (f:'a->'b) (g:'b->'c) (x:'a) = g (f x)
