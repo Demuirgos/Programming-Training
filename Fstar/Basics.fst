@@ -1,23 +1,34 @@
 module Basics
-
 open FStar.Mul
 open FStar.Real
+//==================================================================================================
 
+let ( |> ) (x:'a) (f:'a->'b) = f x
+let ( >> ) (f:'a->'b) (g:'b->'c) (x:'a) = g (f x)
+let rec ( -- ) (low:nat) (high:nat{ high >= low}) 
+                : Tot (list nat) (decreases %[high - low]) 
+                =   if low = high then [] 
+                    else low::((low + 1) -- high) 
+let rec map (f:nat->nat)  (l:list nat) = match l with
+    | []    -> []
+    | h::t  -> (f h) :: (map f t) 
 //==================================================================================================
 type divides  (divisor :nat) (n:nat) = exists (k:nat). k*divisor=n
 type isPrime n = ~(exists (d:nat). divides d n /\ 1<d /\ d<n) /\ n>1
 
-let _ = assert(isPrime 23)
 let _ = assert(isPrime 3)
-//let _ = assert(isPrime 1) //does not pass the Z3 SMT Solver's query
-//let _ = assert(isPrime 4) //does not pass the Z3 SMT Solver's query
+let _ = assert(isPrime 23)
 
+[@@expect_failure] let _ = assert(isPrime 4) //does not pass the Z3 SMT Solver's query
 //==================================================================================================
-type favorite (n:nat) = n = 23
+let ( / ) (k:nat) (n:nat) :Type = ∃ m. m*k = n 
+let   p   (p:nat{p > 1} ) :Type = ∀ d. ~(d/p) \/ 1>=d \/ d>=p
 
-let _ = assert(favorite 23)
-//let _ = assert(favorite 22) doesn't pass cause cleary 22 sucks as a number
+let _ = assert( p 23 /\ p 2 /\ p 3)
 
+[@@expect_failure] let _ = assert(p 1) //does not pass the Z3 SMT Solver's query
+//==================================================================================================
+let r = (1 -- 24) |> (map (λ i -> 23))
 //==================================================================================================
 val max : x:int -> y:int -> z:int{ z >= x && z >= y }
 val min : x:nat -> y:nat -> z:nat{ z = x  || z = y  }
@@ -34,6 +45,12 @@ let _ = assert (forall x y. max x y >= x /\
 let _ = assert (forall x y. min x y <= x /\ 
                             min x y <= y /\
                             (min x y = x \/ min x y = y))
+//==================================================================================================
+type favorite (n:nat) = n = 23
+
+let _ = assert(favorite 23)
+[@@expect_failure] let _ = assert(favorite 22) //doesn't pass cause cleary 22 sucks as a number
+
 
 //==================================================================================================
 let _ = assert (forall (x:nat). 0 <= x)
@@ -64,9 +81,12 @@ val pow2 : x:real -> y:real{ y >=. zero }
 let pow2 x = x *. x
 
 //==================================================================================================
-let pow_assert x = 
+let pow_assert1 x = 
     assume (x <> 0);
     assert (x * x > 0)
-//  assert (x * x < 0) evaluates to wrong /false cause clearly sqr func is a map from R to R+
+
+(*let pow_assert2 x =assume (x <> 0);   //  evaluates to wrong /false
+                    assert (x * x > 0) //  cause clearly sqr func 
+                    assert (x * x < 0) //  is a map from R to R+*)
 
 //==================================================================================================
