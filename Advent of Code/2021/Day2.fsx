@@ -1,22 +1,18 @@
+open System.IO
 type Instruction = Up of int | Down of int | Forward of int | NoMove
 type State = {
     Horizontal : int
     Depth : int
 }
 let init = {Horizontal = 0; Depth = 0}
-let instructions =   """forward 5
-                        down 5
-                        forward 8
-                        up 3
-                        down 8
-                        forward 2""".Split '\n'
-                    |> Array.map (fun e -> e.Trim().Split ' ')
-                    |> Array.map (fun e -> match e.[0] with 
+let instructions =  File.ReadLines(@"./Input/Day2.txt")
+                    |> Seq.map (fun e -> e.Trim().Split ' ')
+                    |> Seq.map (fun e -> match e.[0] with 
                                     | "up" -> Up(int e.[1])
                                     | "forward" -> Forward(int e.[1])
                                     | "down" -> Down(int e.[1])
                                     | _ -> NoMove)
-                    |> Array.toList
+                    |> Seq.toList
 let rec apply state = 
     function 
     | [] -> state
