@@ -36,26 +36,11 @@ int part2Proc(vector<bitset<l>>& data, bool check){
         int freq = count_if(idxs.begin(), idxs.end(), [=](int i){
             return data[i][j];
         });
-        vector<int>::iterator it;
-        if(freq > idxs.size() - freq){
-            it = remove_if(idxs.begin(), idxs.end(), [&](int i){
-                return check ? !data[i][j] : data[i][j];
+        Auto it = remove_if(idxs.begin(), idxs.end(), [=](int i){
+                return freq  > idxs.size() - freq ? (check ? !data[i][j] : data[i][j]) :
+                       freq == idxs.size() - freq ? (check ? !data[i][j] : data[i][j]) :
+                                                    (check ? data[i][j] : !data[i][j]);
             });
-        } else if (freq == idxs.size() - freq){
-            if(check){
-                it = remove_if(idxs.begin(), idxs.end(), [=](int i){
-                    return !data[i][j];
-                });
-            } else {
-                it = remove_if(idxs.begin(), idxs.end(), [=](int i){
-                    return data[i][j];
-                });
-            }
-        } else {
-            it = remove_if(idxs.begin(), idxs.end(), [=](int i){
-                return check ? data[i][j] : !data[i][j];
-            });
-        }
         idxs.erase(it, idxs.end());
     }
     return data[idxs[0]].to_ulong();
