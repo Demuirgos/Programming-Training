@@ -11,6 +11,7 @@ Write your code in this editor and press "Run" button to compile and execute it.
 #include <bitset>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include <iterator>
 using namespace std;
 #define l 12
@@ -74,9 +75,12 @@ int part2(vector<bitset<l>>& data){
 
 int main()
 {
-    string line;
-    vector<bitset<l>> data;
-    while (cin >> line) data.push_back(std::bitset< l >( stoi(line, 0, 2) ));
-    cout << "Part 1 : " << part1(data) << endl;
-    cout << "Part 2 : " << part2(data) << endl;
+    std::ifstream file(".\\Input\\Day3.txt");
+    if (file.is_open()) {
+      string line; vector<bitset<l>> data;
+      while (std::getline(file, line)) data.push_back(std::bitset< l >( stoi(line, 0, 2) ));
+      cout << "Part 1 : " << part1(data) << endl;
+      cout << "Part 2 : " << part2(data) << endl;
+      file.close();
+    }
 }
