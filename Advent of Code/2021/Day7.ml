@@ -17,7 +17,7 @@ let consumn =
     if n == 0 then acc else loop (acc + n) (n - 1) in 
   loop 0
 let solve mode =
-  let data = List.map int_of_string (In_channel.read_lines ".\Input\Day7.txt") in
+  let data = List.map int_of_string ( List.flatten (In_channel.read_lines ".\Input\Day7.txt")) in
   let input = List.sort (fun i j -> i - j) data in
   match mode with
       Part1 -> 
