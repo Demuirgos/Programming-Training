@@ -1,12 +1,12 @@
 open Core.Std
 open Prevasives
 type mode = 
-    Part1 
+      Part1 
     | Part2
 let sum l = List.fold_right (+) l 0 
 let median l = 
-  let lenght = List.length l in 
-  lenght / 2
+  let length = List.length l in 
+  length / 2
 let mean l = 
   let add, len = sum l, List.length l in
   add / len 
