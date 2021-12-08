@@ -8,8 +8,7 @@ let median l =
   let lenght = List.length l in 
   lenght / 2
 let mean l = 
-  let add = sum l in
-  let len = List.length l in 
+  let add, len = sum l, List.length l in
   add / len 
 let abs i = if i < 0 then -i else i
 let consumn n = n * (n + 1) / 2
