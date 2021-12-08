@@ -12,10 +12,7 @@ let mean l =
   let len = List.length l in 
   add / len 
 let abs i = if i < 0 then -i else i
-let consumn = 
-  let rec loop acc n = 
-    if n == 0 then acc else loop (acc + n) (n - 1) in 
-  loop 0
+let consumn n = n * (n + 1) / 2
 let solve mode =
   let data = List.map int_of_string ( List.flatten (In_channel.read_lines ".\Input\Day7.txt")) in
   let input = List.sort (fun i j -> i - j) data in
