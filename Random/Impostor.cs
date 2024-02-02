@@ -34,8 +34,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 
-
-List<Expression> ParseExpression(string s) {
+string HandleExpression(string s) {
     bool ParseInt(string s, [NotNullWhen(true)] out int? result, ref int i)
     {
         int n = 0;
@@ -69,74 +68,28 @@ List<Expression> ParseExpression(string s) {
         return true;
     }
 
-    Expression ParseSubExpression(string s, ref int i) {
+    string ParseSubExpression(string s, ref int i) {
         if(ParseString(s, out string resString, ref i)) {
-            return new Simple(resString);
+            return resString;
         } else if(ParseInt(s, out int? resInt, ref i)) {
             int rep = resInt.Value;
-            List<Expression> body = [];
+            StringBuilder sb = new();
             i++;
             while(i < s.Length && s[i] != ']') {
-                body.Add(ParseSubExpression(s, ref i));
+                sb.Append(ParseSubExpression(s, ref i));
             }
             i++;
-            return new Complex(rep, body);
+            return string.Join(string.Empty, Enumerable.Repeat(sb.ToString(), rep));
         } 
-        Console.WriteLine(s[i]);
-
         throw new UnreachableException();
     } 
     int index = 0;
-    List<Expression> result = [];
+    StringBuilder result = new();
     while(index < s.Length && s[index] != ']') {
-        result.Add(ParseSubExpression(s, ref index));
+        result.Append(ParseSubExpression(s, ref index));
     }
-    return result;
+    return result.ToString();
 }
 
-string HandleExpressions(List<Expression> exprs) {
-    string HandleExpression(Expression expr) {
 
-        switch (expr)
-        {
-            case Simple simpleNode:
-                return simpleNode.Body;
-            case Complex complexNode:
-                int reps = complexNode.Repetition;
-                StringBuilder sb = new();
-                foreach (var subExpr in complexNode.Body)
-                {
-                    sb.Append(HandleExpression(subExpr));
-                }
-                return string.Join(string.Empty, Enumerable.Repeat(sb.ToString(), reps));
-                
-            default:
-                throw new UnreachableException();
-        }
-    }
-
-    return string.Join(string.Empty, exprs.Select(expr => HandleExpression(expr)));
-}
-
-Console.WriteLine("abcabccdcdcdef" == HandleExpressions(ParseExpression("2[abc]3[cd]ef")));
-
-
-public record Expression;
-public record Complex(int Repetition, List<Expression> Body) : Expression {
-    public override string ToString() {
-        StringBuilder sb = new();
-        sb.Append(Repetition);
-        sb.Append("[");
-        foreach (var item in Body)
-        {
-            sb.Append(item.ToString());
-        }
-        sb.Append("]");
-        return sb.ToString();
-    }
-}
-public record Simple(string Body) : Expression {
-    public override string ToString() {
-        return Body;
-    }
-}
+Console.WriteLine("zzzyypqjkjkefjkjkefjkjkefjkjkefyypqjkjkefjkjkefjkjkefjkjkefef" == HandleExpression("3[z]2[2[y]pq4[2[jk]e1[f]]]ef"));
